@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://d2jlge4fqj4j3"]
+[gd_scene load_steps=19 format=3 uid="uid://d2jlge4fqj4j3"]
 
 [ext_resource type="PackedScene" path="res://assets/models/penguin/Waving Penguin.glb" id="1_penguin"]
 [ext_resource type="PackedScene" path="res://assets/models/penguin_idle/Penguin_Idle.glb" id="2_idle"]
@@ -13,6 +13,8 @@
 [ext_resource type="Script" path="res://scripts/screen_fade.gd" id="11_fade"]
 [ext_resource type="Script" path="res://scripts/ice_block_tool.gd" id="12_tool"]
 [ext_resource type="Script" path="res://scripts/ice_hud.gd" id="13_hud"]
+[ext_resource type="Script" path="res://scripts/note_ui.gd" id="15_note"]
+[ext_resource type="Script" path="res://scripts/progress_hud.gd" id="16_progress"]
 [ext_resource type="PackedScene" path="res://scenes/props/ice_block.tscn" id="14_block"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
@@ -24,7 +26,7 @@ height = 1.8
 [node name="World" parent="." instance=ExtResource("10_world")]
 
 [node name="Player" type="CharacterBody3D" parent="." groups=["player"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 125)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 132)
 script = ExtResource("4_controller")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
@@ -84,6 +86,24 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("13_hud")
+
+[node name="NoteUi" type="Control" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("15_note")
+
+[node name="ProgressHud" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 420.0
+offset_bottom = 66.0
+mouse_filter = 2
+text = "Puntos de interés 0/5"
+script = ExtResource("16_progress")
 
 [node name="ScreenFade" type="ColorRect" parent="HUD"]
 anchors_preset = 15

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/ice_formation.gd" id="1_form"]
 [ext_resource type="Script" path="res://scripts/world/prop_scatter.gd" id="2_scatter"]
@@ -7,8 +7,9 @@
 [ext_resource type="StandardMaterial3D" path="res://assets/materials/snow_grey.tres" id="5_mat"]
 [ext_resource type="PackedScene" path="res://scenes/props/ice_crystal.tscn" id="6_scn"]
 [ext_resource type="PackedScene" path="res://scenes/props/rock.tscn" id="7_scn"]
-[ext_resource type="PackedScene" path="res://scenes/world/checkpoint_totem.tscn" id="8_scn"]
-[ext_resource type="PackedScene" path="res://scenes/world/point_of_interest.tscn" id="9_scn"]
+[ext_resource type="PackedScene" path="res://scenes/world/beacon.tscn" id="8_scn"]
+[ext_resource type="PackedScene" path="res://scenes/world/checkpoint_totem.tscn" id="9_scn"]
+[ext_resource type="PackedScene" path="res://scenes/world/point_of_interest.tscn" id="10_scn"]
 
 [node name="SectorStart" type="Node3D"]
 
@@ -29,25 +30,25 @@ wobble = 0.5
 top_bump = 0.3
 
 [node name="GroundNorth" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 76.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 72)
 script = ExtResource("1_form")
-size = Vector3(68, 9, 17)
+size = Vector3(68, 9, 8)
 material = ExtResource("5_mat")
 wobble = 0.5
 top_bump = 0.3
 
 [node name="GroundSouth" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 132.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 136)
 script = ExtResource("1_form")
-size = Vector3(68, 9, 35)
+size = Vector3(68, 9, 28)
 material = ExtResource("5_mat")
 wobble = 0.5
 top_bump = 0.3
 
 [node name="PondIsland" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 100)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 99)
 script = ExtResource("1_form")
-size = Vector3(10, 9, 10)
+size = Vector3(6, 9, 6)
 material = ExtResource("5_mat")
 wobble = 0.5
 top_bump = 0.15
@@ -99,16 +100,17 @@ material = ExtResource("4_mat")
 wobble = 0
 top_bump = 0
 
-[node name="POI_Base" parent="." instance=ExtResource("9_scn")]
+[node name="POI_Base" parent="." instance=ExtResource("10_scn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 79)
 poi_id = "base_muro"
 
-[node name="POI_Isla" parent="." instance=ExtResource("9_scn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100)
+[node name="Beacon_Isla" parent="." instance=ExtResource("8_scn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 99)
 poi_id = "isla_estanque"
+note_text = "El hielo recuerda a quien lo escucha."
 
-[node name="Totem_Start" parent="." instance=ExtResource("8_scn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 120)
+[node name="Totem_Start" parent="." instance=ExtResource("9_scn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 128)
 
 [node name="Rocks" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 105)
@@ -129,7 +131,7 @@ area = Vector2(280, 80)
 scatter_seed = 4
 
 [node name="IslandCrystals" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 99)
 script = ExtResource("2_scatter")
 scene = ExtResource("6_scn")
 count = 3

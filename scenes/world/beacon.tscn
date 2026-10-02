@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/beacon.gd" id="1_beacon"]
+[ext_resource type="StandardMaterial3D" path="res://assets/materials/ice_grey.tres" id="2_ice"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
+top_radius = 0.5
+bottom_radius = 0.75
+height = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_crystal"]
+top_radius = 0.0
+bottom_radius = 0.4
+height = 1.4
+radial_segments = 4
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_beam"]
+top_radius = 0.35
+bottom_radius = 0.35
+height = 60.0
+radial_segments = 12
+rings = 1
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_beacon"]
+radius = 1.8
+
+[node name="Beacon" type="Area3D"]
+script = ExtResource("1_beacon")
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("CylinderMesh_pedestal")
+surface_material_override/0 = ExtResource("2_ice")
+
+[node name="Crystal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+mesh = SubResource("CylinderMesh_crystal")
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 31, 0)
+mesh = SubResource("CylinderMesh_beam")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+light_color = Color(0.4, 0.7, 1, 1)
+omni_range = 14.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("SphereShape3D_beacon")

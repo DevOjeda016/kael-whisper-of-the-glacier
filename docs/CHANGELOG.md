@@ -4,6 +4,37 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Primer puzzle: "La isla del eco" y sistema de progreso
+
+**Qué:** el estanque del sector inicial tiene una isla con una **baliza** (un cristal gris con un haz de luz tenue visible desde lejos, como los santuarios de BotW). Al tocarla se enciende en azul y pasa lo siguiente: se registra el punto de interés, aparece la nota **"El hielo recuerda a quien lo escucha."** (del guion del PDF), se suma 1 **pez brillante** y el contador sube a `1/5`.
+
+**El puzzle:** el estanque mide 60x46 m y la isla (6x6) queda a ~20 m de cualquier orilla, más lejos de lo que se nada. Nadando directo, Kael se ahoga a ~1.3 m de la isla (comprobado). La solución natural combina nadar + bloques: crear un bloque a mitad del lago, subirse a descansar (la resistencia se regenera encima) y seguir; o tender un puente con bloques.
+
+**Ajuste de nado:** `swim_stamina_drain_rate` pasó de 0.7 a **0.8** (alcance ~15 m en vez de ~17 m) para que el puzzle tenga margen. Con 0.7 se llegaba a la isla con 0.1 de resistencia sobrante.
+
+**Sistema de progreso (nuevo):**
+- `GameState` (autoload): `solved_pois`, `fish_count`, `total_pois` (5, del PDF), señales `poi_solved` y `fish_changed`. `solve_poi()` no suma dos veces.
+- `Beacon` (`scenes/world/beacon.tscn`): se agrega a cualquier sector con `poi_id`, `note_text` y `fish_reward`.
+- HUD: contador "Puntos de interés N/5 · Peces N" y panel de notas que se desvanece a los 5 s.
+
+**Archivos:**
+- `scripts/game_state.gd` (autoload, registrado en `project.godot`).
+- `scripts/world/beacon.gd`, `scenes/world/beacon.tscn`.
+- `scripts/note_ui.gd`, `scripts/progress_hud.gd` y sus nodos en `scenes/main.tscn`.
+- `scenes/world/sector_start.tscn`: estanque z 76..122, isla en z 99, baliza `isla_estanque`; tótem de inicio movido a (6, 0, 128).
+- `scenes/main.tscn`: Kael inicia en z=132 (la franja sur ahora es más corta).
+- `scripts/player_controller.gd`: `swim_stamina_drain_rate` = 0.8.
+
+**Ajustes:** largo del estanque y tamaño de la isla (en `sector_start.tscn`), `swim_stamina_drain_rate`, `max_blocks`/`create_cost` de la herramienta de hielo, `fish_reward` y `note_text` de cada baliza, `GameState.total_pois`.
+
+**Pruebas (headless):** nadando directo desde la orilla sur se ahoga antes de llegar; con un bloque de descanso a mitad llega, activa la baliza (`solved=1`, `fish=1`) y tocarla de nuevo no suma otra vez. Capturas con Godot confirman el aspecto de la baliza apagada/encendida y la nota. Una roca esparcida en la orilla puede estorbar el paso directo; es decorativa y se mueve cambiando `scatter_seed`.
+
+**Cómo agregar otro puzzle:** instancia `beacon.tscn` en un sector, ponle un `poi_id` único y una `note_text`, y diseña el camino hacia ella.
+
+**Pendiente:** los otros 5 marcadores (`base_muro`, `cima_cordillera`, `borde_grieta`, `torre_alta`, `orilla_lejana`) siguen vacíos y no cuentan en el contador; falta decidir sus puzzles. El progreso no se guarda en disco todavía (los tótems guardan solo la reaparición).
+
+---
+
 ## Bloques de hielo (crear y romper, estilo Cryonis)
 
 **Qué:** Kael crea bloques de hielo donde apunta la cámara y los rompe. Sirven para puentes, escalones y plataformas: se camina encima y se trepan por las paredes. También flotan sobre el agua.
@@ -63,7 +94,7 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 **Cómo funciona:**
 - El agua está en y=-1.5. Al bajar los pies de la superficie, Kael pasa al estado `SWIMMING`: sin gravedad, flotando con el agua a la altura del pecho.
-- Nada a 2.5 m/s (Shift: 3.5) y gasta 0.7/s (+0.7 con Shift). Con 5 de resistencia alcanza ~17 m.
+- Nada a 2.5 m/s (Shift: 3.5) y gasta 0.7/s (+0.7 con Shift); luego se subió a 0.8/s (ver el puzzle de la isla). Con 5 de resistencia alcanza ~15 m.
 - Para salir: avanzar contra la pared de la orilla (reusa el trepado y el impulso de cornisa) o saltar (cuesta 0.5 de resistencia).
 - El punto seguro se guarda cada 0.75 s en suelo, solo si hay suelo firme a 1.3 m alrededor (así no se guardan bordes de orilla). Al ahogarse se usa el de hace ~1.5 s; si no hay, el último tótem.
 - Animación provisional: la de correr a 0.6x más un anillo de ondas. Cuando exista una animación con "swim" en el nombre (Meshy), se usa sola.

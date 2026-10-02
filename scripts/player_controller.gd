@@ -66,11 +66,11 @@ enum State { GROUND, CLIMBING, SWIMMING, DROWNING }
 
 # --- Nadar (estilo Zelda): Kael es torpe nadando, así que es lento y cansa;
 # no regenera resistencia en el agua y, si se agota, se ahoga y reaparece en
-# tierra firme. Con 5 s de resistencia alcanza ~17 m. ---
+# tierra firme. Con 5 s de resistencia alcanza ~15 m. ---
 @export var swim_speed: float = 2.5
 @export var swim_sprint_multiplier: float = 1.4
 @export var swim_acceleration: float = 6.0
-@export var swim_stamina_drain_rate: float = 0.7
+@export var swim_stamina_drain_rate: float = 0.8
 @export var swim_sprint_extra_drain: float = 0.7
 @export var swim_float_depth: float = 0.9      # cuánto bajan los pies de la superficie (agua a la altura del pecho)
 @export var swim_enter_depth: float = 0.35     # cuánto deben bajar los pies para empezar a nadar

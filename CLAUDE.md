@@ -25,7 +25,7 @@ Límites firmes del diseño: sin combate, sin vida/daño, sin fracaso duro. Un s
 - Trepar: cualquier superficie casi vertical (`|normal.y| < climb_max_normal_y`) salvo las del grupo `no_climb`. El jugador está en el grupo `player`.
 - Stamina: ~12 m de trepada máximo y solo regenera en suelo; los acantilados del mapa se parten en escalones de ≤10 m con repisas para descansar.
 - Caer bajo `fall_limit_y` reaparece en el último tótem tocado, sin castigo.
-- Nadar: agua en y=-1.5 (`scenes/world/world.tscn`, `Water/Volume` con `water_volume.gd`). Cansa, no regenera en el agua; sin resistencia = ahogarse (fundido y reaparecer en el último punto seguro). Se sale trepando la orilla o saltando. Esto reemplaza el "sin fracaso duro" del PDF por un fracaso suave.
+- Nadar: agua en y=-1.5 (`scenes/world/world.tscn`, `Water/Volume` con `water_volume.gd`). Cansa (0.8/s, alcance ~15 m), no regenera en el agua; sin resistencia = ahogarse (fundido y reaparecer en el último punto seguro). Se sale trepando la orilla o saltando. Esto reemplaza el "sin fracaso duro" del PDF por un fracaso suave.
 - Animación 'swim': si hay una animación con "swim" en el nombre se usa sola; si no, correr a 0.6x.
 - Animaciones se buscan por palabra clave, no por nombre exacto (Godot renombra al reimportar).
 
@@ -34,6 +34,9 @@ Al descargar animaciones el plugin crea `imported_models/` con copias duplicadas
 
 ## Git
 Binarios (`.glb`, `.png`, audio) van por Git LFS (`.gitattributes`). Se versionan `.import` y `.uid`; `.godot/` no.
+
+## Progreso y puzzles
+`GameState` (autoload, `scripts/game_state.gd`): puntos de interés resueltos, peces brillantes, `total_pois` = 5. Un puzzle = una `Beacon` (`scenes/world/beacon.tscn`) con `poi_id`, `note_text` y `fish_reward`; al tocarla se resuelve, da pez y muestra la nota (`note_ui.gd`). Puzzle 1 "La isla del eco": isla a ~20 m de ambas orillas del estanque, inalcanzable a nado (alcance ~15 m); se resuelve con un bloque de descanso o un puente. Los otros marcadores de interés siguen vacíos.
 
 ## Bloques de hielo
 `scripts/ice_block_tool.gd` (hijo del Player) + `scenes/props/ice_block.tscn`. Q = modo hielo; clic izq. crea, clic der. rompe, rueda gira. Cuesta 0.8 de resistencia, máx. 4 activos (el más viejo se deshace). El agua cuenta como suelo. Sin animaciones de crear/romper aún.
