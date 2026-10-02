@@ -4,6 +4,41 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Sonido ambiental y efectos (sintetizados, provisionales)
+
+**Qué:** el juego ya suena. Todos los sonidos se sintetizan con `tools/gen_sfx.py` (Python estándar, sin dependencias y determinista), que escribe `.wav` en `assets/audio/sfx/` (Git LFS). Para usar audio real, por ejemplo hecho con ElevenLabs, basta con reemplazar el `.wav` con el mismo nombre.
+
+| Sonido | Archivo | Cuándo |
+|---|---|---|
+| Viento | `wind_loop.wav` (12 s, bucle) | Siempre. Sube con las ráfagas de la nieve y con la altura; de noche, un poco más bajo |
+| Agua | `water_loop.wav` (8 s, bucle) | Cerca del agua o nadando (rayos alrededor de Kael cada 0.5 s) |
+| Crujido del glaciar | `glacier_groan.wav` | Al azar cada 35–90 s, con tono variable |
+| Pasos en nieve | `step_snow_1..4.wav` | Cada 0.6 m caminados (variante al azar); más agudos sobre bloques o hielo pulido; golpe al aterrizar |
+| Chapoteo | `splash.wav` | Al entrar al agua Kael o un bloque, y brazadas suaves al nadar |
+| Crear hielo | `ice_create.wav` | Al crear un bloque |
+| Romper hielo | `ice_shatter.wav` | Al romper un bloque |
+| Campanita | `beacon_chime.wav` | Al activar una baliza por primera vez |
+
+**Código:**
+- `scripts/audio/sfx.gd`: autoload `Sfx` con `play()` y `play_at()`, grupo de reproductores reutilizables, variantes al azar y bucles.
+- `scripts/world/ambience.gd`: nodo `Ambience` en `world.tscn`.
+- `scripts/audio/footsteps.gd`: nodo `Footsteps` bajo el Player en `main.tscn`.
+- Enganches en `ice_block_tool.gd`, `ice_block.gd`, `beacon.gd` y `water_volume.gd`.
+- `snowfall.gd` expone `get_gust()`, para que el viento suene con las ráfagas.
+
+**Ajustes:**
+- `Ambience`: `wind_volume_db`, `wind_gust_range_db`, `wind_height_bonus_db`, `water_volume_db`, `water_near_distance`, `groan_interval`, `groan_volume_db`, `night_wind_db`.
+- `Footsteps`: `stride`, `step_volume_db`, `land_min_speed`, `swim_stroke_interval`.
+- Los sonidos se cambian en las funciones de `tools/gen_sfx.py`; luego hay que volver a correrlo.
+
+**Pruebas (headless):**
+- Al caminar, nadar, crear y romper un bloque y activar la baliza suenan los 8 tipos de sonido.
+- El volumen del agua sube de 0.21 (cerca) a 0.93 (nadando).
+- Las pruebas anteriores siguen pasando: puzzle, descanso en el tótem y ruta de escalada.
+- **Falta probar a oído.** Los volúmenes están puestos a ojo y conviene ajustarlos jugando.
+
+---
+
 ## Agua con profundidad y espuma, y témpanos en el mar
 
 **Qué:**

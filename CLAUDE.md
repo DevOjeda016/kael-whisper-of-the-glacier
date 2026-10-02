@@ -38,6 +38,9 @@ Binarios (`.glb`, `.png`, audio) van por Git LFS (`.gitattributes`). Se versiona
 ## Progreso y puzzles
 `GameState` (autoload, `scripts/game_state.gd`): puntos de interés resueltos, peces brillantes, `total_pois` = 5. Un puzzle = una `Beacon` (`scenes/world/beacon.tscn`) con `poi_id`, `note_text` y `fish_reward`; al tocarla se resuelve, da pez y muestra la nota (`note_ui.gd`). Puzzle 1 "La isla del eco": isla 8x8 a ~21 m de ambas orillas (inalcanzable a nado, alcance ~15 m); la baliza está sobre un pilar de hielo pulido de 6.5 m que exige 3 bloques apilados, así que el bloque de descanso del cruce hay que romperlo desde la isla y reusarlo. Pistas de tutorial: `HintZone` (`scripts/world/hint_zone.gd`) + `HintUi` en el HUD. Los otros marcadores de interés siguen vacíos.
 
+## Sonido
+Autoload `Sfx` (`scripts/audio/sfx.gd`): `Sfx.play(nombre)` / `Sfx.play_at(nombre, pos)`; los nombres son archivos de `assets/audio/sfx/` sin extensión (`step_snow` elige variante 1..4). Los `.wav` provisionales los genera `python3 tools/gen_sfx.py`; se reemplazan por audio real con el mismo nombre. Ambiente en `scripts/world/ambience.gd` (viento según ráfagas/altura, agua según cercanía, crujidos al azar); pasos y brazadas en `scripts/audio/footsteps.gd`.
+
 ## Día y noche
 `DayNightCycle` (`scripts/world/day_night_cycle.gd`, en `world.tscn`, grupo `day_night`): 1 día = 24 min reales (como BotW). Mueve `DirectionalLight3D` (sol) y `Moon`, e interpola cielo/niebla/ambiente desde la tabla `KEYS`. Pasa `sun_dir`, `moon_dir` y `night` al shader del cielo (estrellas, luna, aurora al norte). API: `get_hour()`, `set_hour()`, `is_night()`, `get_night_amount()`, `rest_until(h)`. Los tótems permiten descansar con E (día → 21:00, noche → 6:00). Reloj en `clock_hud.gd`.
 

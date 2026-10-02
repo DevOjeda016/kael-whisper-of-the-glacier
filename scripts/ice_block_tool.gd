@@ -370,4 +370,5 @@ func _create_at(xform: Transform3D) -> bool:
 	player.stamina -= create_cost
 	player.stamina_regen_timer = 0.0
 	_cooldown_timer = cooldown
+	Sfx.play_at("ice_create", xform.origin, -4.0)
 	return true

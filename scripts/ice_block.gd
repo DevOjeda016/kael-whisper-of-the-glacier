@@ -24,6 +24,7 @@ func shatter() -> void:
 	if _breaking:
 		return
 	_breaking = true
+	Sfx.play_at("ice_shatter", global_position, -3.0)
 	remove_from_group("ice_block")
 	var shape := get_node_or_null("CollisionShape3D") as CollisionShape3D
 	if shape:

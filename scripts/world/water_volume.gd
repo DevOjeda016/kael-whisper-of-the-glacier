@@ -12,6 +12,8 @@ func get_surface_y() -> float:
 	return global_position.y
 
 func _on_body_entered(body: Node3D) -> void:
+	if body.is_in_group("player") or body.is_in_group("ice_block"):
+		Sfx.play_at("splash", Vector3(body.global_position.x, get_surface_y(), body.global_position.z), -6.0)
 	if body.has_method("enter_water"):
 		body.enter_water(self)
 

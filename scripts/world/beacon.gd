@@ -47,6 +47,7 @@ func _on_body_entered(body: Node3D) -> void:
 
 	var first := GameState.solve_poi(poi_id)
 	if first:
+		Sfx.play("beacon_chime", -4.0)
 		GameState.add_fish(fish_reward)
 		var ui := get_tree().get_first_node_in_group("note_ui")
 		if ui:

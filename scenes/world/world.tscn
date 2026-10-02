@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/sector_manager.gd" id="1_manager"]
 [ext_resource type="Script" path="res://scripts/world/glacier_backdrop.gd" id="2_backdrop"]
@@ -10,6 +10,7 @@
 [ext_resource type="Material" path="res://assets/materials/water.tres" id="8_water"]
 [ext_resource type="Script" path="res://scripts/world/ice_floes.gd" id="9_floes"]
 [ext_resource type="Material" path="res://assets/materials/snow_grey.tres" id="10_snow"]
+[ext_resource type="Script" path="res://scripts/world/ambience.gd" id="11_amb"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_1"]
 shader = ExtResource("6_sky")
@@ -101,6 +102,9 @@ script = ExtResource("3_water")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Water/Volume"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -20, 0)
 shape = SubResource("BoxShape3D_water")
+
+[node name="Ambience" type="Node" parent="."]
+script = ExtResource("11_amb")
 
 [node name="IceFloes" type="MultiMeshInstance3D" parent="."]
 script = ExtResource("9_floes")

@@ -15,6 +15,7 @@ extends GPUParticles3D
 var _mat := ParticleProcessMaterial.new()
 var _noise := FastNoiseLite.new()
 var _player: Node3D = null
+var _gust01: float = 0.5   # ráfaga actual de 0 (calma) a 1 (fuerte); la usa el sonido del viento
 
 func _ready() -> void:
 	top_level = true
@@ -79,7 +80,12 @@ func _process(_delta: float) -> void:
 
 	# Ráfagas: el empuje del viento oscila con ruido lento.
 	var t := Time.get_ticks_msec() * 0.001 * gust_speed
-	var gust := 1.0 + gust_strength * _noise.get_noise_1d(t * 10.0)
+	var gust_noise := _noise.get_noise_1d(t * 10.0)
+	_gust01 = clampf(gust_noise * 0.5 + 0.5, 0.0, 1.0)
+	var gust := 1.0 + gust_strength * gust_noise
 	var dir := wind_direction.normalized()
 	var push := maxf(wind_strength * gust, 0.0)
 	_mat.gravity = Vector3(dir.x * push, -0.4, dir.y * push)
+
+func get_gust() -> float:
+	return _gust01
