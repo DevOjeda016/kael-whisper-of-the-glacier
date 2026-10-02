@@ -35,6 +35,9 @@ Al descargar animaciones el plugin crea `imported_models/` con copias duplicadas
 ## Git
 Binarios (`.glb`, `.png`, audio) van por Git LFS (`.gitattributes`). Se versionan `.import` y `.uid`; `.godot/` no.
 
+## Ambiente
+`Snowfall` (nieve + viento con ráfagas), `Water/Surface` (normales animadas), niebla en `world.tscn`, materiales de hielo con rim/clearcoat. Todo ajustable con `@export`.
+
 ## Mapa (grey-box, ~300x300 m, norte = -Z)
 Orilla de inicio al sur (y=0) -> cordillera con terrazas (y=15, 30) -> grieta de 12 m (barrera) -> orilla lejana al norte (y=12). Un puente en el extremo este cruza la grieta mientras no existan los bloques de hielo. 6 puntos de interés y 2 tótems. El sector inicial tiene un estanque con isla para nadar.
 

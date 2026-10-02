@@ -1,8 +1,10 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/sector_manager.gd" id="1_manager"]
 [ext_resource type="Script" path="res://scripts/world/glacier_backdrop.gd" id="2_backdrop"]
 [ext_resource type="Script" path="res://scripts/world/water_volume.gd" id="3_water"]
+[ext_resource type="Script" path="res://scripts/world/water_surface.gd" id="4_surface"]
+[ext_resource type="Script" path="res://scripts/world/snowfall.gd" id="5_snow"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_1"]
 sky_top_color = Color(0.38, 0.55, 0.75, 1)
@@ -30,7 +32,9 @@ size = Vector2(5000, 5000)
 [sub_resource type="StandardMaterial3D" id="Material_water"]
 transparency = 1
 albedo_color = Color(0.1, 0.35, 0.55, 0.85)
-roughness = 0.1
+roughness = 0.08
+metallic = 0.3
+metallic_specular = 0.8
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_water"]
 size = Vector3(700, 40, 700)
@@ -55,6 +59,7 @@ directional_shadow_max_distance = 120.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
 
 [node name="Surface" type="MeshInstance3D" parent="Water"]
+script = ExtResource("4_surface")
 mesh = SubResource("PlaneMesh_water")
 surface_material_override/0 = SubResource("Material_water")
 
@@ -64,6 +69,9 @@ script = ExtResource("3_water")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Water/Volume"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -20, 0)
 shape = SubResource("BoxShape3D_water")
+
+[node name="Snowfall" type="GPUParticles3D" parent="."]
+script = ExtResource("5_snow")
 
 [node name="GlacierBackdrop" type="MeshInstance3D" parent="."]
 script = ExtResource("2_backdrop")

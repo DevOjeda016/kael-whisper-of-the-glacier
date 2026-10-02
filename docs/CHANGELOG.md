@@ -4,6 +4,29 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Atmósfera: nieve, viento, agua con movimiento y hielo brillante
+
+**Qué:**
+- **Nieve:** ~1000 copos caen alrededor del jugador (el emisor lo sigue, los copos se quedan en el mundo).
+- **Viento:** empuja los copos con ráfagas que cambian lento. Solo afecta a la nieve, no a la niebla.
+- **Agua:** la superficie tiene un mapa de normales de ruido que se desplaza despacio, así que ondula y refleja.
+- **Hielo:** los materiales de hielo y nieve ganaron brillo en los bordes (rim) y capa brillante (clearcoat). No es un shader propio: son opciones de `StandardMaterial3D`, así no hay código de shader que mantener.
+
+**Por qué:** era lo que faltaba del ambiente (antes solo había una niebla suave) y le da vida al mapa antes de poner arte final.
+
+**Archivos:**
+- `scripts/world/snowfall.gd` (nuevo) + nodo `Snowfall` en `scenes/world/world.tscn`.
+- `scripts/world/water_surface.gd` (nuevo) en `Water/Surface`.
+- `assets/materials/ice_grey.tres`, `ice_smooth.tres`, `snow_grey.tres`.
+
+**Ajustes:** en `Snowfall`: `wind_direction`, `wind_strength`, `gust_strength`, `gust_speed`, `flake_size`, `area`. En `Water/Surface`: `tile_size`, `scroll_speed`, `normal_strength`. En los `.tres`: `rim`, `clearcoat`, `roughness`.
+
+**Pruebas:** capturas con Godot: 60 FPS con todo activo. La nieve es discreta a propósito; sube `flake_size` o el `amount` del emisor si la quieres más densa.
+
+**Pendiente:** viento sobre la niebla, ventisca más fuerte por zonas, nieve que se acumula, splash al caer al agua.
+
+---
+
 ## Nadar y ahogarse (estilo Zelda)
 
 **Qué:** Kael ya puede nadar. Es lento y cansa; no regenera resistencia en el agua y, si se acaba, se ahoga: se hunde, la pantalla se funde a azul oscuro y reaparece en tierra firme (último punto seguro) con la resistencia llena.
