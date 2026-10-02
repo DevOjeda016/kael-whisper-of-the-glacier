@@ -4,6 +4,28 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Agua con profundidad y espuma, y témpanos en el mar
+
+**Qué:**
+- **Shader de agua** (`assets/shaders/water.gdshader`, material `assets/materials/water.tres`):
+  - Color según la profundidad, leída de la textura de profundidad de la escena: turquesa en lo bajo y azul profundo en lo hondo.
+  - Espuma donde el agua toca hielo u orilla, cortada con ruido para que no sea una línea.
+  - Fresnel: más opaca al mirarla de lado.
+  - Ondas con dos mapas de normales que se desplazan en direcciones distintas.
+  - De noche se oscurece sola con la luz.
+- **Témpanos** (`scripts/world/ice_floes.gd`, nodo `IceFloes` en `world.tscn`): 70 losas irregulares de 2–9 m flotando entre los muros del mapa y el anillo de glaciares. Usan un solo MultiMesh (una llamada de dibujo) y no tienen colisión, así que no afectan ningún puzzle (el estanque no tiene).
+- `water_surface.gd` ahora solo genera la textura de ruido y se la pasa al shader; antes desplazaba el UV de un `StandardMaterial3D`.
+
+**Problema encontrado:** los témpanos se veían solo como bordes porque los triángulos estaban al revés (Godot toma el sentido horario como cara frontal). Se invirtió el orden de los vértices.
+
+**Ajustes:**
+- Shader: `shallow_color`, `deep_color`, `depth_falloff`, `min_alpha`/`max_alpha`, `foam_width`, `foam_strength`, `wave_dir_a/b`, `normal_strength`.
+- `IceFloes`: `count`, `inner_radius`/`outer_radius`, `size_range`, `floe_seed`.
+
+**Pruebas:** capturas del estanque (de día y de noche), la orilla de la isla con espuma y el mar con témpanos; 46–60 FPS.
+
+---
+
 ## Ciclo de día y noche (estilo BotW)
 
 **Qué:** el tiempo pasa como en Breath of the Wild. Un día de juego dura **24 minutos reales** (1 s real = 1 min de juego) y empieza a las 9:00.

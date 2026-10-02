@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/sector_manager.gd" id="1_manager"]
 [ext_resource type="Script" path="res://scripts/world/glacier_backdrop.gd" id="2_backdrop"]
@@ -7,6 +7,9 @@
 [ext_resource type="Script" path="res://scripts/world/snowfall.gd" id="5_snow"]
 [ext_resource type="Shader" path="res://assets/shaders/sky_glacier.gdshader" id="6_sky"]
 [ext_resource type="Script" path="res://scripts/world/day_night_cycle.gd" id="7_daynight"]
+[ext_resource type="Material" path="res://assets/materials/water.tres" id="8_water"]
+[ext_resource type="Script" path="res://scripts/world/ice_floes.gd" id="9_floes"]
+[ext_resource type="Material" path="res://assets/materials/snow_grey.tres" id="10_snow"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_1"]
 shader = ExtResource("6_sky")
@@ -51,13 +54,6 @@ adjustment_saturation = 1.12
 [sub_resource type="PlaneMesh" id="PlaneMesh_water"]
 size = Vector2(5000, 5000)
 
-[sub_resource type="StandardMaterial3D" id="Material_water"]
-transparency = 1
-albedo_color = Color(0.1, 0.35, 0.55, 0.85)
-roughness = 0.08
-metallic = 0.3
-metallic_specular = 0.8
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_water"]
 size = Vector3(700, 40, 700)
 
@@ -97,7 +93,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
 [node name="Surface" type="MeshInstance3D" parent="Water"]
 script = ExtResource("4_surface")
 mesh = SubResource("PlaneMesh_water")
-surface_material_override/0 = SubResource("Material_water")
+surface_material_override/0 = ExtResource("8_water")
 
 [node name="Volume" type="Area3D" parent="Water"]
 script = ExtResource("3_water")
@@ -105,6 +101,10 @@ script = ExtResource("3_water")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Water/Volume"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -20, 0)
 shape = SubResource("BoxShape3D_water")
+
+[node name="IceFloes" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("9_floes")
+material = ExtResource("10_snow")
 
 [node name="Snowfall" type="GPUParticles3D" parent="."]
 script = ExtResource("5_snow")
