@@ -35,6 +35,9 @@ Al descargar animaciones el plugin crea `imported_models/` con copias duplicadas
 ## Git
 Binarios (`.glb`, `.png`, audio) van por Git LFS (`.gitattributes`). Se versionan `.import` y `.uid`; `.godot/` no.
 
+## Bloques de hielo
+`scripts/ice_block_tool.gd` (hijo del Player) + `scenes/props/ice_block.tscn`. Q = modo hielo; clic izq. crea, clic der. rompe, rueda gira. Cuesta 0.8 de resistencia, máx. 4 activos (el más viejo se deshace). El agua cuenta como suelo. Sin animaciones de crear/romper aún.
+
 ## Ambiente
 `Snowfall` (nieve + viento con ráfagas), `Water/Surface` (normales animadas), niebla en `world.tscn`, materiales de hielo con rim/clearcoat. Todo ajustable con `@export`.
 

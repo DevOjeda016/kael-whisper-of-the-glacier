@@ -4,6 +4,36 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Bloques de hielo (crear y romper, estilo Cryonis)
+
+**Qué:** Kael crea bloques de hielo donde apunta la cámara y los rompe. Sirven para puentes, escalones y plataformas: se camina encima y se trepan por las paredes. También flotan sobre el agua.
+
+**Controles:** **Q** activa el modo hielo (mira + vista previa). Dentro: **clic izquierdo** crea, **clic derecho** rompe el bloque apuntado, **rueda** gira 15°, **Q** sale. Empezar a trepar o ahogarse lo apaga solo. Se usa en suelo y nadando.
+
+**Reglas:**
+- Cubo de 2 m, colocación libre pegado a la superficie apuntada (se apila sobre otros bloques y contra paredes). El agua cuenta como suelo; el bloque flota con el centro a +0.2 m.
+- Alcance de 12 m desde Kael. La vista previa es azul si se puede y roja si no (fuera de alcance, solapado con algo —incluido Kael— o sin resistencia).
+- Crear cuesta 0.8 de resistencia. Máximo 4 bloques activos: al crear el quinto, el más viejo se deshace. Romper es gratis.
+- Una brecha de agua de ~10 m se cruza con bloques separados 2 m (el salto alcanza ~3 m) o encadenando: cruzar, romper el primero, crear el siguiente.
+
+**Por qué:** es la herramienta central del PDF (bloques modulares para puentes, rampas y rutas de escape); el balance queda en cantidad de bloques y costo de resistencia, no en daño.
+
+**Archivos:**
+- `scripts/ice_block_tool.gd` (nuevo, hijo de `Player`): modo, apuntado, vista previa, validación, crear/romper. Tiene `place_at()` para pruebas.
+- `scripts/ice_block.gd` + `scenes/props/ice_block.tscn` (nuevos): el bloque. El nodo `Visual` es el que se reemplaza por el modelo de Meshy.
+- `scripts/ice_hud.gd` (nuevo): mira y texto de ayuda.
+- `assets/materials/ice_block.tres` (nuevo).
+- `scripts/world/water_volume.gd`: se agrega al grupo `water_volume` (la herramienta lo usa para apuntar al agua).
+- `scenes/main.tscn`: nodos `IceBlockTool` e `IceHud`.
+
+**Ajustes (`@export` de `IceBlockTool`):** `max_blocks`, `create_cost`, `place_range`, `block_size`, `yaw_step_deg`, `cooldown`, `water_float_offset`.
+
+**Pruebas:** en headless: el costo se descuenta, no crea solapado ni sin resistencia, respeta el máximo de 4, Kael trepa y cruza un bloque, y un puente de 2 bloques sobre el estanque lo lleva a la isla sin nadar. Una captura confirma la mira, la vista previa y el texto.
+
+**Notas:** si dos bloques quedan separados exactamente 1 m, la cápsula de Kael (radio 0.5) puede atorarse en el hueco; conviene separarlos 2 m o juntarlos. Sin animaciones de crear/romper (pendientes de Meshy: `apilar bloque`, `romper bloque`). Una captura mostró ~37 FPS justo al cargar; en capturas anteriores iba a 60, por revisar a mano.
+
+---
+
 ## Atmósfera: nieve, viento, agua con movimiento y hielo brillante
 
 **Qué:**

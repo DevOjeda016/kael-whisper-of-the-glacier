@@ -23,6 +23,10 @@ Abrir `project.godot` en Godot. La primera vez reimporta los assets.
 | Correr | Shift |
 | Cámara | Mouse |
 | Liberar mouse | Esc |
+| Modo hielo | Q |
+| Crear bloque (en modo hielo) | Clic izquierdo |
+| Romper bloque (en modo hielo) | Clic derecho |
+| Girar bloque (en modo hielo) | Rueda |
 
 Trepar: avanzar contra una pared trepable. Correr, trepar y el salto grande gastan resistencia.
 

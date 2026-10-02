@@ -4,6 +4,7 @@ extends Area3D
 ## se extiende hacia abajo. Avisa a quien entre (el jugador) para que nade.
 
 func _ready() -> void:
+	add_to_group("water_volume")
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 

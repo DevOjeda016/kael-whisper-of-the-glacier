@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://d2jlge4fqj4j3"]
+[gd_scene load_steps=17 format=3 uid="uid://d2jlge4fqj4j3"]
 
 [ext_resource type="PackedScene" path="res://assets/models/penguin/Waving Penguin.glb" id="1_penguin"]
 [ext_resource type="PackedScene" path="res://assets/models/penguin_idle/Penguin_Idle.glb" id="2_idle"]
@@ -11,6 +11,9 @@
 [ext_resource type="Script" path="res://scripts/fps_label.gd" id="9_fps"]
 [ext_resource type="PackedScene" path="res://scenes/world/world.tscn" id="10_world"]
 [ext_resource type="Script" path="res://scripts/screen_fade.gd" id="11_fade"]
+[ext_resource type="Script" path="res://scripts/ice_block_tool.gd" id="12_tool"]
+[ext_resource type="Script" path="res://scripts/ice_hud.gd" id="13_hud"]
+[ext_resource type="PackedScene" path="res://scenes/props/ice_block.tscn" id="14_block"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.5
@@ -36,6 +39,10 @@ extra_animation_scenes = [ExtResource("2_idle"), ExtResource("5_jump"), ExtResou
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 target_position = Vector3(0, 0, -0.8)
 collision_mask = 1
+
+[node name="IceBlockTool" type="Node3D" parent="Player"]
+script = ExtResource("12_tool")
+block_scene = ExtResource("14_block")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Player"]
 position = Vector3(0, 1.6, 0)
@@ -68,6 +75,15 @@ offset_bottom = 38.0
 mouse_filter = 2
 text = "FPS: 0"
 script = ExtResource("9_fps")
+
+[node name="IceHud" type="Control" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("13_hud")
 
 [node name="ScreenFade" type="ColorRect" parent="HUD"]
 anchors_preset = 15
