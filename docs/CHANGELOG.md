@@ -4,6 +4,37 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Puzzle de la isla más retador, límite real de bloques y pistas en pantalla
+
+**Por qué:** probando a mano, el puzzle se resolvía en un minuto sin pensar, no había ninguna señal en pantalla de cómo crear hielo y los bloques parecían infinitos (al crear el quinto, el más viejo desaparecía solo, así que nunca se acababan).
+
+**Límite real de bloques:** máximo **3** activos (como Cryonis). Al llegar al límite ya no se crea: hay que romper uno con clic derecho. Esto convierte los bloques en un recurso que se administra.
+
+**Puzzle "La isla del eco" v2:**
+- La baliza ahora está encima de un **pilar de hielo pulido** de 6.5 m en el centro de la isla. El pilar no se trepa y **el hielo no se le pega** (grupo `no_climb`).
+- Para llegar arriba hay que apilar **3 bloques** junto al pilar (2 bloques + salto grande no alcanza, comprobado).
+- Cruzar el estanque gasta al menos 1 bloque (descanso). Como 1 + 3 = 4 > 3, hay que **romper el bloque de descanso desde la isla** para reusarlo. Ese es el "ajá".
+- Isla de 6x6 a 8x8 (cabe la pila junto al pilar), sin relieve arriba para que asienten los bloques; se quitaron sus cristales.
+- Orillas norte y sur 2 m más lejos (estanque z 74..124) para que la isla más grande siga inalcanzable a nado: nadando directo Kael se ahoga ~2.3 m antes (comprobado).
+
+**HUD del hielo:**
+- Siempre visible abajo a la derecha: 3 rombos (llenos = bloques disponibles) y `[Q] hielo`.
+- En modo hielo, si no se puede crear sale el motivo bajo la mira: "Muy lejos", "No cabe", "Sin resistencia", "El hielo pulido rechaza los bloques", "Límite de 3 bloques: rompe uno (clic der.)".
+
+**Pistas de tutorial (nuevo):** `HintZone` (`Area3D`) muestra un texto abajo mientras Kael está dentro, y deja de salir al resolver el puzzle (`hide_when_solved`). Hay dos: en la orilla sur ("El estanque es demasiado ancho... Pulsa Q para crear hielo") y en la isla ("Hielo pulido: no se puede trepar ni se le pega el hielo").
+
+**Archivos:**
+- `scripts/ice_block_tool.gd`: `max_blocks` 3 sin reciclado, `invalid_reason`, rechazo de superficies `no_climb`.
+- `scripts/ice_hud.gd`: reescrito (rombos, tecla, motivo).
+- `scripts/hint_ui.gd` (nuevo, nodo `HintUi` en `scenes/main.tscn`), `scripts/world/hint_zone.gd` (nuevo).
+- `scenes/world/sector_start.tscn`: isla 8x8, `IslandPillar`, baliza a y=6.5, orillas movidas, `Hint_Shore` y `Hint_Pillar`, sin `IslandCrystals`.
+
+**Ajustes:** `max_blocks` (si se sube, hay que subir el pilar), altura del pilar (`IslandPillar.size.y`), textos de las `HintZone`.
+
+**Pruebas (headless):** el pilar rechaza bloques; el cuarto bloque se rechaza por límite y se crea tras romper uno; con 2 bloques + salto grande no se alcanza la baliza; con 3 apilados Kael trepa la pila y la activa; nadando directo se ahoga antes de la isla y con un bloque de descanso llega. Capturas confirman el HUD y las pistas.
+
+---
+
 ## Primer puzzle: "La isla del eco" y sistema de progreso
 
 **Qué:** el estanque del sector inicial tiene una isla con una **baliza** (un cristal gris con un haz de luz tenue visible desde lejos, como los santuarios de BotW). Al tocarla se enciende en azul y pasa lo siguiente: se registra el punto de interés, aparece la nota **"El hielo recuerda a quien lo escucha."** (del guion del PDF), se suma 1 **pez brillante** y el contador sube a `1/5`.

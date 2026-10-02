@@ -36,10 +36,10 @@ Al descargar animaciones el plugin crea `imported_models/` con copias duplicadas
 Binarios (`.glb`, `.png`, audio) van por Git LFS (`.gitattributes`). Se versionan `.import` y `.uid`; `.godot/` no.
 
 ## Progreso y puzzles
-`GameState` (autoload, `scripts/game_state.gd`): puntos de interés resueltos, peces brillantes, `total_pois` = 5. Un puzzle = una `Beacon` (`scenes/world/beacon.tscn`) con `poi_id`, `note_text` y `fish_reward`; al tocarla se resuelve, da pez y muestra la nota (`note_ui.gd`). Puzzle 1 "La isla del eco": isla a ~20 m de ambas orillas del estanque, inalcanzable a nado (alcance ~15 m); se resuelve con un bloque de descanso o un puente. Los otros marcadores de interés siguen vacíos.
+`GameState` (autoload, `scripts/game_state.gd`): puntos de interés resueltos, peces brillantes, `total_pois` = 5. Un puzzle = una `Beacon` (`scenes/world/beacon.tscn`) con `poi_id`, `note_text` y `fish_reward`; al tocarla se resuelve, da pez y muestra la nota (`note_ui.gd`). Puzzle 1 "La isla del eco": isla 8x8 a ~21 m de ambas orillas (inalcanzable a nado, alcance ~15 m); la baliza está sobre un pilar de hielo pulido de 6.5 m que exige 3 bloques apilados, así que el bloque de descanso del cruce hay que romperlo desde la isla y reusarlo. Pistas de tutorial: `HintZone` (`scripts/world/hint_zone.gd`) + `HintUi` en el HUD. Los otros marcadores de interés siguen vacíos.
 
 ## Bloques de hielo
-`scripts/ice_block_tool.gd` (hijo del Player) + `scenes/props/ice_block.tscn`. Q = modo hielo; clic izq. crea, clic der. rompe, rueda gira. Cuesta 0.8 de resistencia, máx. 4 activos (el más viejo se deshace). El agua cuenta como suelo. Sin animaciones de crear/romper aún.
+`scripts/ice_block_tool.gd` (hijo del Player) + `scenes/props/ice_block.tscn`. Q = modo hielo; clic izq. crea, clic der. rompe, rueda gira. Cuesta 0.8 de resistencia, máx. 3 activos (al llegar al límite hay que romper uno; no se reciclan solos). Las superficies `no_climb` (hielo pulido) rechazan bloques. HUD siempre visible: rombos de bloques libres + `[Q] hielo`; en modo hielo muestra el motivo si no se puede crear. El agua cuenta como suelo. Sin animaciones de crear/romper aún.
 
 ## Ambiente
 `Snowfall` (nieve + viento con ráfagas), `Water/Surface` (normales animadas), niebla en `world.tscn`, materiales de hielo con rim/clearcoat. Todo ajustable con `@export`.
