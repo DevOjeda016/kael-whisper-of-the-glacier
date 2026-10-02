@@ -6,7 +6,7 @@ extends GPUParticles3D
 
 @export var area: float = 45.0              # medio ancho de la zona de nieve (m)
 @export var emit_height: float = 14.0       # altura del emisor sobre el jugador
-@export var flake_size: float = 0.14
+@export var flake_size: float = 0.18
 @export var wind_direction: Vector2 = Vector2(1.0, 0.35)
 @export var wind_strength: float = 1.2      # empuje constante del viento
 @export var gust_strength: float = 1.6      # cuánto varían las ráfagas
@@ -31,22 +31,45 @@ func _ready() -> void:
 	_mat.initial_velocity_min = 1.0
 	_mat.initial_velocity_max = 2.2
 	_mat.gravity = Vector3(0, -0.4, 0)
-	_mat.scale_min = 0.6
-	_mat.scale_max = 1.3
+	_mat.scale_min = 0.4
+	_mat.scale_max = 1.8
+	# Copos que giran y se mecen un poco al caer.
+	_mat.turbulence_enabled = true
+	_mat.turbulence_noise_strength = 0.6
+	_mat.turbulence_noise_scale = 6.0
+	_mat.turbulence_influence_min = 0.05
+	_mat.turbulence_influence_max = 0.15
 	process_material = _mat
 
 	var quad := QuadMesh.new()
 	quad.size = Vector2(flake_size, flake_size)
 	var flake := StandardMaterial3D.new()
 	flake.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	flake.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	flake.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	flake.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	flake.albedo_color = Color(1, 1, 1, 0.85)
+	flake.albedo_color = Color(1, 1, 1, 0.9)
+	flake.albedo_texture = _soft_dot()
+	flake.disable_receive_shadows = true
 	quad.material = flake
 	draw_pass_1 = quad
 
 	_noise.frequency = 1.0
 	_player = get_tree().get_first_node_in_group("player") as Node3D
+
+## Copo redondo y suave (degradado radial) en vez de un cuadrado.
+func _soft_dot() -> GradientTexture2D:
+	var g := Gradient.new()
+	g.set_color(0, Color(1, 1, 1, 1))
+	g.set_color(1, Color(1, 1, 1, 0))
+	g.add_point(0.35, Color(1, 1, 1, 0.85))
+	var tex := GradientTexture2D.new()
+	tex.gradient = g
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 32
+	tex.height = 32
+	return tex
 
 func _process(_delta: float) -> void:
 	if _player == null:

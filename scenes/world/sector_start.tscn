@@ -31,7 +31,7 @@ wobble = 0.5
 top_bump = 0.3
 
 [node name="GroundNorth" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 70)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.6, 70)
 script = ExtResource("1_form")
 size = Vector3(68, 9, 8)
 material = ExtResource("5_mat")
@@ -39,7 +39,7 @@ wobble = 0.5
 top_bump = 0.3
 
 [node name="GroundSouth" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 137)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.6, 137)
 script = ExtResource("1_form")
 size = Vector3(68, 9, 26)
 material = ExtResource("5_mat")
@@ -53,6 +53,8 @@ size = Vector3(8, 9, 8)
 material = ExtResource("5_mat")
 wobble = 0.3
 top_bump = 0.0
+snow_lip = 0.0
+outline_wobble = 0.0
 
 [node name="IslandPillar" type="StaticBody3D" parent="." groups=["no_climb"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 99)

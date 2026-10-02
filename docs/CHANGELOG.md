@@ -4,6 +4,46 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Pulido visual: luz, cielo, materiales y formas del terreno
+
+**Por qué:** en la revisión con capturas desde 8 puntos el mapa se veía como un prototipo de cajas. La luz era plana, el cielo gris, no había profundidad, el hielo era de un solo color y los bordes, rectos. Se pulió solo lo que es procedural y no va a venir de Meshy: luz, cielo, materiales, formas del terreno y partículas. Los props (rocas, tótem) se quedan como provisionales hasta tener los modelos.
+
+**Tanda 1: luz y atmósfera** (`scenes/world/world.tscn`)
+- Cielo con shader propio (`assets/shaders/sky_glacier.gdshader`): degradado frío, sol cálido con halo y nubes procedurales que se mueven con el viento. El ruido se rota en cada octava y se deforma, para que las nubes no salgan angulosas.
+- Sol más bajo (30°) desde el suroeste, color cálido; sombras más suaves y con más alcance (140 m).
+- Tonemap ACES, bloom (glow), SSAO (sombra en esquinas y uniones), un poco más de contraste y saturación.
+- Niebla con perspectiva aérea y niebla de altura sobre el agua. Los primeros valores eran demasiado densos y lavaban todo; quedaron en `fog_density` 0.0009 y `fog_height_density` 0.04.
+- Copos de nieve redondos y suaves (degradado radial), con tamaños variados y algo de turbulencia, en vez de cuadritos (`snowfall.gd`).
+
+**Tanda 2: materiales** (`assets/shaders/glacier_terrain.gdshader`, en coordenadas de mundo, sin UV)
+- Paredes de hielo con degradado según la distancia a la cima (claro arriba, azul profundo abajo), estratos horizontales ondulados y grietas finas.
+- Cimas de nieve con leve variación y brillitos que destellan según desde dónde se mira.
+- Capa de nieve sobre el borde superior de cada pared. `ice_formation.gd` pasa la altura de la cima al shader como `instance uniform top_y`.
+- `ice_grey.tres` y `snow_grey.tres` ahora son `ShaderMaterial` de ese shader (con distinto `gradient_depth`). `ice_smooth.tres` (hielo pulido) es más azul, brillante y con un leve resplandor.
+
+**Tanda 3: formas y detalles** (`scripts/world/ice_formation.gd`, solo formaciones con `wobble > 0`; el pilar y el muro de tutorial quedan rectos)
+- Esquinas redondeadas vistas desde arriba (`corner_radius`, automático).
+- Contorno con ondulación amplia (`outline_wobble` 1.6 m) para romper bordes rectos. Usa la misma amplitud en todas las formaciones, así las caras que se tocan se mueven igual y no se abren grietas (comprobado entre LedgeB y TerraceB).
+- Borde de nieve que sobresale 0.3 m en la cima (`snow_lip`).
+- Carámbanos procedurales colgando del borde superior (MultiMesh, sin colisión ni sombra): `icicle_density`, `icicle_length`. Solo en cimas sobre `icicle_min_top_y`, no en losas a nivel del suelo.
+- Props esparcidos ya no quedan colgando de los filos: `prop_scatter.gd` exige suelo bajo todo su contorno (`footprint`).
+- Etiquetas de depuración de los puntos de interés ocultas (`show_debug_label`).
+- Costuras: las losas norte y sur del inicio bajan 0.08 m para que no parpadeen al cruzarse con las vecinas.
+- La isla del puzzle no lleva ondulación de contorno ni borde de nieve, para no acortar la distancia a nado.
+
+**Pruebas:**
+- La torre de 3 bloques se crea y se trepa con la cámara real.
+- Sigue sin llegarse a nado y con descanso sí. 2 bloques + salto grande no alcanzan.
+- La ruta de escalada terraza A → LedgeB → cordillera (y=30) se completa.
+- No hay huecos entre LedgeB y TerraceB.
+- 48–60 FPS en las capturas.
+
+**Ajustes:** todo con `@export` o parámetros del shader: colores del cielo y nubes (`cloud_coverage`, `cloud_scale`), colores del hielo (`ice_deep/mid/light`, `gradient_depth`, `band_*`, `crack_strength`), brillos (`sparkle_*`), niebla y glow en `Environment_1`.
+
+**Pendiente:** el trazado del mapa sigue siendo franjas largas (terrazas de 230–300 m) y desde el aire se nota. Romperlo implica rediseñar la forma de las terrazas, no solo pulirlas.
+
+---
+
 ## Sistema de colocación de hielo: apilar, subir/bajar y acercar/alejar
 
 **Por qué:** probando a mano no se podía apilar. Causas encontradas:

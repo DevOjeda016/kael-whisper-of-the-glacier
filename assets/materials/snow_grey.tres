@@ -1,9 +1,9 @@
-[gd_resource type="StandardMaterial3D" format=3]
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/glacier_terrain.gdshader" id="1_shader"]
 
 [resource]
-albedo_color = Color(0.93, 0.96, 0.98, 1)
-metallic = 0.1
-roughness = 0.8
-rim_enabled = true
-rim = 0.2
-rim_tint = 0.6
+shader = ExtResource("1_shader")
+shader_parameter/gradient_depth = 5.0
+shader_parameter/snow_cap = 0.35
+shader_parameter/band_strength = 0.12

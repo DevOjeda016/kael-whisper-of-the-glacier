@@ -6,6 +6,7 @@ extends Area3D
 signal visited(id: String)
 
 @export var poi_id: String = "poi"
+@export var show_debug_label: bool = false   # muestra el id flotando, solo para depurar
 
 var _visited: bool = false
 
@@ -14,6 +15,7 @@ func _ready() -> void:
 	var label := get_node_or_null("Label3D") as Label3D
 	if label:
 		label.text = poi_id
+		label.visible = show_debug_label
 
 func _on_body_entered(body: Node3D) -> void:
 	if _visited or not body.is_in_group("player"):
