@@ -12,13 +12,15 @@ var _tool: Node = null
 var _controls: Label = null
 var _reason: Label = null
 var _key: Label = null
+var _offsets: Label = null
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_controls = _make_label(16, Color(0.85, 0.95, 1.0))
-	_controls.text = "MODO HIELO   Clic izq: crear   Clic der: romper   Rueda: girar   Q: salir"
+	_controls.text = "Clic izq: crear   Clic der: romper   Rueda: cerca/lejos   R/F: subir/bajar   Shift+rueda: girar"
 	_reason = _make_label(18, Color(1.0, 0.6, 0.55))
 	_key = _make_label(15, Color(0.85, 0.95, 1.0, 0.85))
+	_offsets = _make_label(16, Color(0.75, 0.92, 1.0))
 
 func _make_label(font_size: int, color: Color) -> Label:
 	var l := Label.new()
@@ -42,6 +44,18 @@ func _process(_delta: float) -> void:
 	_reason.visible = active and not _tool.aim_valid
 	_reason.text = _tool.invalid_reason
 	_key.text = "[Q] salir" if active else "[Q] hielo"
+	# Estado de la vista previa: apilando, altura y distancia ajustadas.
+	var parts: PackedStringArray = []
+	if _tool.snapped_to_block:
+		parts.append("Apilar")
+	if _tool.level_offset != 0:
+		parts.append("Altura %+d" % _tool.level_offset)
+	if _tool.distance_offset != 0:
+		parts.append("Distancia %+d m" % int(_tool.distance_offset * _tool.distance_step))
+	_offsets.visible = active and not parts.is_empty()
+	_offsets.text = "   ".join(parts)
+	_offsets.reset_size()
+	_offsets.position = Vector2((size.x - _offsets.size.x) * 0.5, size.y * 0.5 - 52.0)
 
 	_controls.reset_size()
 	_controls.position = Vector2((size.x - _controls.size.x) * 0.5, size.y - 70.0)

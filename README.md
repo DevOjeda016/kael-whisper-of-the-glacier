@@ -26,7 +26,11 @@ Abrir `project.godot` en Godot. La primera vez reimporta los assets.
 | Modo hielo | Q |
 | Crear bloque (en modo hielo) | Clic izquierdo |
 | Romper bloque (en modo hielo) | Clic derecho |
-| Girar bloque (en modo hielo) | Rueda |
+| Acercar / alejar la vista previa | Rueda |
+| Subir / bajar la vista previa | R / F |
+| Girar bloque | Shift + rueda |
+
+Apilar: apunta a un bloque (a cualquier cara) y la vista previa se pone encima de su pila.
 
 Trepar: avanzar contra una pared trepable. Correr, trepar y el salto grande gastan resistencia.
 

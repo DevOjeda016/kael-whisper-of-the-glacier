@@ -4,6 +4,37 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Sistema de colocación de hielo: apilar, subir/bajar y acercar/alejar
+
+**Por qué:** probando a mano no se podía apilar. Causas encontradas:
+1. La mira apunta desde la cámara, detrás de Kael. Junto al pilar la mira chocaba con el pilar y el bloque se rechazaba ("hielo pulido").
+2. Para poner un bloque encima de otro había que ver su cara de arriba, cosa casi imposible desde la altura de la cámara.
+3. La mira solía caer justo donde está Kael, así que la vista previa salía roja ("No cabe").
+4. Un bloque girado con la cámara metía una esquina en la pared y tampoco cabía.
+
+**Cómo funciona ahora (inspirado en la Ultramano de TotK):**
+- **Apilar automático:** apuntar a un bloque, a cualquier cara, pone la vista previa encima de su pila. Tres clics al mismo sitio = torre de 3. El HUD muestra "Apilar".
+- **Rueda:** acerca o aleja la vista previa de a 1 m (máx. ±8); cae sobre lo que haya debajo (suelo o agua).
+- **R / F:** sube o baja la vista previa de a un bloque (máx. ±4). Sirve para escaleras y para pegar bloques a paredes.
+- **Shift + rueda:** girar (antes era la rueda sola).
+- **Apoyo obligatorio:** un bloque tiene que tocar suelo, agua, otro bloque o una pared. Nunca flota. El hielo pulido no cuenta como apoyo, así que no se puede "subir" un bloque pegado al pilar.
+- **Paredes:** contra una pared el bloque se alinea con ella. Contra hielo pulido resbala hasta el pie, así que apuntar al pilar deja el bloque en su base.
+- **Kael no estorba:** en modo hielo la cámara se corre al hombro (`shoulder_offset`). Si la vista previa cae sobre Kael, se aparta sola.
+- Al crear un bloque, la altura y la distancia vuelven a 0.
+- HUD: nueva línea de controles e indicador "Apilar · Altura +N · Distancia +N m".
+
+**Archivos:** `scripts/ice_block_tool.gd` (reescrito: `_stack_on`, `_apply_offsets`, `_drop`, `_has_support`, `_nudge_from_player`, cámara al hombro, API de prueba `stack_on()`), `scripts/ice_hud.gd`, `README.md`, `CLAUDE.md`.
+
+**Ajustes (`@export` de `IceBlockTool`):** `distance_step`, `max_distance_steps`, `max_level`, `support_margin`, `shoulder_offset`, `shoulder_blend_speed`.
+
+**Pruebas (headless, con la cámara real, sin atajos):**
+- Parado en la isla mirando al pilar, 3 clics al mismo sitio crean la torre de 3 y Kael la trepa y activa la baliza.
+- Un bloque subido sin apoyo se rechaza.
+- Las pruebas anteriores siguen pasando: a nado no se llega, con descanso sí, 2 bloques + salto grande no alcanza.
+- La captura confirma la vista previa "Apilar" sobre el bloque junto al pilar.
+
+---
+
 ## Puzzle de la isla más retador, límite real de bloques y pistas en pantalla
 
 **Por qué:** probando a mano, el puzzle se resolvía en un minuto sin pensar, no había ninguna señal en pantalla de cómo crear hielo y los bloques parecían infinitos (al crear el quinto, el más viejo desaparecía solo, así que nunca se acababan).
