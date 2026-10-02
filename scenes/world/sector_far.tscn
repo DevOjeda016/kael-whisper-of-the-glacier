@@ -1,44 +1,49 @@
 [gd_scene load_steps=8 format=3]
 
-[ext_resource type="StandardMaterial3D" path="res://assets/materials/ice_grey.tres" id="1_ice"]
-[ext_resource type="StandardMaterial3D" path="res://assets/materials/snow_grey.tres" id="2_snow"]
-[ext_resource type="PackedScene" path="res://scenes/world/point_of_interest.tscn" id="3_inst"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_0"]
-size = Vector3(30, 10, 30)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_0"]
-size = Vector3(30, 10, 30)
-
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(300, 12, 88)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(300, 12, 88)
+[ext_resource type="Script" path="res://scripts/world/ice_formation.gd" id="1_form"]
+[ext_resource type="Script" path="res://scripts/world/prop_scatter.gd" id="2_scatter"]
+[ext_resource type="StandardMaterial3D" path="res://assets/materials/ice_grey.tres" id="3_mat"]
+[ext_resource type="StandardMaterial3D" path="res://assets/materials/snow_grey.tres" id="4_mat"]
+[ext_resource type="PackedScene" path="res://scenes/props/ice_crystal.tscn" id="5_scn"]
+[ext_resource type="PackedScene" path="res://scenes/props/rock.tscn" id="6_scn"]
+[ext_resource type="PackedScene" path="res://scenes/world/point_of_interest.tscn" id="7_scn"]
 
 [node name="SectorFar" type="Node3D"]
 
 [node name="FarShore" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, -106)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="FarShore"]
-mesh = SubResource("BoxMesh_1")
-surface_material_override/0 = ExtResource("2_snow")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FarShore"]
-shape = SubResource("BoxShape3D_1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -106)
+script = ExtResource("1_form")
+size = Vector3(300, 21, 88)
+material = ExtResource("4_mat")
+wobble = 0.5
+top_bump = 0.3
 
 [node name="FarMesa" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 17, -110)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 16.5, -110)
+script = ExtResource("1_form")
+size = Vector3(30, 11, 30)
+material = ExtResource("3_mat")
+wobble = 0.8
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="FarMesa"]
-mesh = SubResource("BoxMesh_0")
-surface_material_override/0 = ExtResource("1_ice")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FarMesa"]
-shape = SubResource("BoxShape3D_0")
-
-[node name="POI_Lejana" parent="." instance=ExtResource("3_inst")]
+[node name="POI_Lejana" parent="." instance=ExtResource("7_scn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -100)
-
 poi_id = "orilla_lejana"
+
+[node name="Rocks" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -106)
+script = ExtResource("2_scatter")
+scene = ExtResource("6_scn")
+count = 40
+area = Vector2(280, 80)
+min_scale = 0.7
+max_scale = 2.4
+scatter_seed = 7
+
+[node name="Crystals" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -106)
+script = ExtResource("2_scatter")
+scene = ExtResource("5_scn")
+count = 12
+area = Vector2(280, 80)
+scatter_seed = 8
+

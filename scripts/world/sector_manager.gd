@@ -47,7 +47,8 @@ func _distance_to(i: int) -> float:
 	return Vector2(p.x - c.x, p.z - c.z).length()
 
 func _add_sector(i: int, scene: Resource) -> void:
+	var t0 := Time.get_ticks_msec()
 	var inst := (scene as PackedScene).instantiate()
 	add_child(inst)
 	_loaded[i] = inst
-	print("Sector cargado: ", sector_paths[i])
+	print("Sector cargado: %s (%d ms)" % [sector_paths[i], Time.get_ticks_msec() - t0])

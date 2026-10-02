@@ -43,7 +43,7 @@ spring_length = 5.0
 
 [node name="Camera3D" type="Camera3D" parent="Player/SpringArm3D"]
 current = true
-far = 400.0
+far = 4000.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
