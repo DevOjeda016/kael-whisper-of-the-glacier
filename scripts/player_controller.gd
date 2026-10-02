@@ -47,6 +47,16 @@ enum State { GROUND, CLIMBING }
 @export var max_stamina: float = 5.0       # segundos de resistencia
 @export var stamina_regen_rate: float = 1.0 # regeneración por segundo (quieto o caminando)
 @export var climb_detect_distance: float = 0.8
+# Una superficie es trepable si es casi vertical: |normal.y| menor a este valor
+# (0 = pared perfecta, 1 = suelo). Las marcadas con el grupo "no_climb" no se trepan.
+@export var climb_max_normal_y: float = 0.35
+# Al llegar al borde superior de una pared, impulso hacia arriba y adelante
+# para subirse a la cornisa en vez de caer de vuelta.
+@export var ledge_boost_up: float = 4.0
+@export var ledge_boost_forward: float = 3.0
+
+# --- Caída fuera del mapa: sin castigo, reaparece en el último tótem ---
+@export var fall_limit_y: float = -12.0
 
 # --- Resistencia (estilo BOTW): correr y escalar la consumen; se regenera
 # al estar quieto o caminando a paso normal, tras una breve pausa. ---
@@ -77,8 +87,11 @@ var climb_wall_normal: Vector3 = Vector3.ZERO
 var idle_timer: float = 0.0
 var is_lying_down: bool = false
 
+var respawn_position: Vector3 = Vector3.ZERO
+
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	respawn_position = global_position
 
 	# El animator del modelo fusiona sus animaciones en su propio _ready();
 	# esperamos un frame para que ya estén disponibles.
@@ -117,6 +130,20 @@ func _physics_process(delta: float) -> void:
 			_process_climbing(delta)
 
 	move_and_slide()
+
+	if global_position.y < fall_limit_y:
+		_respawn()
+
+## Lo llaman los tótems de punto de control al tocarlos.
+func set_respawn_point(pos: Vector3) -> void:
+	respawn_position = pos
+
+func _respawn() -> void:
+	global_position = respawn_position
+	velocity = Vector3.ZERO
+	state = State.GROUND
+	is_jump_anticipating = false
+	is_big_jump = false
 
 func _get_input_dir() -> Vector2:
 	return Vector2(
@@ -258,7 +285,15 @@ func _process_climbing(delta: float) -> void:
 		stamina = max(stamina - climb_stamina_drain_rate * delta, 0.0)
 		stamina_regen_timer = 0.0
 
-	if stamina <= 0.0 or not climb_ray.is_colliding():
+	if stamina <= 0.0:
+		_exit_climb()
+		return
+
+	# Sin pared al frente: si se subía, es el borde superior y se da un
+	# impulso para trepar a la cornisa; si no, simplemente se suelta.
+	if not climb_ray.is_colliding():
+		if vertical_input > 0.1:
+			velocity = -climb_wall_normal * ledge_boost_forward + Vector3.UP * ledge_boost_up
 		_exit_climb()
 		return
 
@@ -288,7 +323,9 @@ func _is_facing_climbable(direction: Vector3) -> bool:
 	if not climb_ray.is_colliding():
 		return false
 	var collider := climb_ray.get_collider()
-	return collider is Node and collider.is_in_group("climbable")
+	if not (collider is Node) or collider.is_in_group("no_climb"):
+		return false
+	return absf(climb_ray.get_collision_normal().y) < climb_max_normal_y
 
 func _enter_climb() -> void:
 	state = State.CLIMBING

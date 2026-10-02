@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/point_of_interest.gd" id="1_poi"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_poi"]
+radius = 2.5
+
+[node name="PointOfInterest" type="Area3D"]
+script = ExtResource("1_poi")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("SphereShape3D_poi")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+billboard = 1
+text = "poi"
+font_size = 48
