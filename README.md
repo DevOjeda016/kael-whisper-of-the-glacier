@@ -23,6 +23,7 @@ Abrir `project.godot` en Godot. La primera vez reimporta los assets.
 | Correr | Shift |
 | Cámara | Mouse |
 | Liberar mouse | Esc |
+| Descansar en un tótem (pasar el tiempo) | E |
 | Modo hielo | Q |
 | Crear bloque (en modo hielo) | Clic izquierdo |
 | Romper bloque (en modo hielo) | Clic derecho |

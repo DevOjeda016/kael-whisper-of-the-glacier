@@ -4,6 +4,44 @@ Una entrada por cambio: qué se hizo, por qué, qué archivos toca y cómo ajust
 
 ---
 
+## Ciclo de día y noche (estilo BotW)
+
+**Qué:** el tiempo pasa como en Breath of the Wild. Un día de juego dura **24 minutos reales** (1 s real = 1 min de juego) y empieza a las 9:00.
+- **Sol:** sale por el este a las 6:00, llega a ~60° a mediodía y se pone por el oeste a las 18:00.
+- **Luna:** recorre el cielo de noche y da una luz azulada con sombras. Solo una de las dos luces proyecta sombras a la vez, para no gastar de más.
+- **Paleta por hora**, interpolada suavemente entre claves:
+  - Amanecer rosado (5:45–7:00).
+  - Día azul.
+  - Atardecer naranja (17:30–18:45).
+  - Noche azul oscura (20:00–4:30).
+  - Cambian el cielo, las nubes, la niebla, la luz ambiente y el color y la fuerza del sol.
+- **Cielo de noche** (shader): estrellas que titilan (tapadas por las nubes), luna con manchas y halo, y **aurora boreal** en cortinas finas que se mueven despacio hacia el norte, donde está el glaciar.
+- **De noche se ve:** igual que en BotW, la noche no es negra. La exposición sube un poco y la luz ambiente queda azulada.
+- **Reloj en el HUD**, abajo a la izquierda: sol o luna y la hora, de 10 en 10 minutos.
+- **Descansar en los tótems** (como las fogatas): junto a un tótem sale "[E] Descansar hasta la noche/la mañana". De día lleva a las 21:00 y de noche a las 6:00, con un fundido a negro.
+
+**Archivos:**
+- `scripts/world/day_night_cycle.gd` (nuevo; nodo `DayNightCycle` en `world.tscn`, grupo `day_night`).
+- Nodo `Moon` (`DirectionalLight3D`) en `world.tscn`.
+- `assets/shaders/sky_glacier.gdshader`: `sun_dir`, `moon_dir`, `night`, estrellas, luna y aurora.
+- `scripts/clock_hud.gd` (nuevo; nodo `ClockHud` en `main.tscn`).
+- `scripts/world/checkpoint_totem.gd`: descansar con E.
+- `scripts/hint_ui.gd`: no reinicia el fundido si se pide la misma pista cada frame.
+- `README.md`: control E.
+
+**Ajustes:**
+- `DayNightCycle`: `day_length_minutes` (0 = tiempo detenido), `start_hour`, `paused`, `max_sun_elevation_deg`, `path_tilt`, `moon_max_energy`, `night_exposure_boost`, y la tabla `KEYS` con los colores de cada hora.
+- Tótem: `morning_hour`, `night_hour`.
+- Cielo: `aurora_strength`, `aurora_color_a/b`, `star_density`, `star_brightness`, `moon_disk`.
+
+**Pruebas:**
+- 10 s reales = 10 min de juego.
+- Descansar de día lleva a las 21:00 y de noche a las 6:00.
+- Capturas a las 6:00, 9:00, 13:00, 18:10, 19:10, 22:30 y 2:00. La aurora y las estrellas se tuvieron que bajar: al principio llenaban todo el cielo y salían desde el atardecer.
+- 50–57 FPS.
+
+---
+
 ## Pulido visual: luz, cielo, materiales y formas del terreno
 
 **Por qué:** en la revisión con capturas desde 8 puntos el mapa se veía como un prototipo de cajas. La luz era plana, el cielo gris, no había profundidad, el hielo era de un solo color y los bordes, rectos. Se pulió solo lo que es procedural y no va a venir de Meshy: luz, cielo, materiales, formas del terreno y partículas. Los props (rocas, tótem) se quedan como provisionales hasta tener los modelos.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/sector_manager.gd" id="1_manager"]
 [ext_resource type="Script" path="res://scripts/world/glacier_backdrop.gd" id="2_backdrop"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/world/water_surface.gd" id="4_surface"]
 [ext_resource type="Script" path="res://scripts/world/snowfall.gd" id="5_snow"]
 [ext_resource type="Shader" path="res://assets/shaders/sky_glacier.gdshader" id="6_sky"]
+[ext_resource type="Script" path="res://scripts/world/day_night_cycle.gd" id="7_daynight"]
 
 [sub_resource type="ShaderMaterial" id="SkyMaterial_1"]
 shader = ExtResource("6_sky")
@@ -78,6 +79,17 @@ light_energy = 1.35
 shadow_enabled = true
 shadow_blur = 1.5
 directional_shadow_max_distance = 140.0
+
+[node name="Moon" type="DirectionalLight3D" parent="."]
+light_color = Color(0.62, 0.72, 1, 1)
+light_energy = 0.0
+shadow_enabled = true
+shadow_blur = 2.0
+directional_shadow_max_distance = 100.0
+visible = false
+
+[node name="DayNightCycle" type="Node" parent="."]
+script = ExtResource("7_daynight")
 
 [node name="Water" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)

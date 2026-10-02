@@ -20,6 +20,8 @@ func _ready() -> void:
 	add_child(_label)
 
 func show_hint(text: String, from: Node) -> void:
+	if from == _owner and text == _label.text and _label.modulate.a > 0.0:
+		return   # ya se está mostrando (algunas zonas la piden cada frame)
 	_owner = from
 	_label.text = text
 	_label.reset_size()
@@ -29,6 +31,7 @@ func show_hint(text: String, from: Node) -> void:
 ## Solo la zona que mostró la pista puede esconderla (las zonas se pueden pisar).
 func hide_hint(from: Node) -> void:
 	if from == _owner:
+		_owner = null
 		_fade(0.0)
 
 func _fade(target: float) -> void:
