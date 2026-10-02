@@ -1,0 +1,19 @@
+# Godot 4
+.godot/
+.import/
+*.translation
+
+# Exportaciones
+export/
+builds/
+export_presets.cfg
+
+# Descargas del plugin de Meshy (se generan duplicados al bajar animaciones)
+imported_models/
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+*.tmp
+.vscode/
+.idea/
