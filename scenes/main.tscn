@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d2jlge4fqj4j3"]
+[gd_scene load_steps=13 format=3 uid="uid://d2jlge4fqj4j3"]
 
 [ext_resource type="PackedScene" path="res://assets/models/penguin/Waving Penguin.glb" id="1_penguin"]
 [ext_resource type="PackedScene" path="res://assets/models/penguin_idle/Penguin_Idle.glb" id="2_idle"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/stamina_hud.gd" id="8_stamina_hud"]
 [ext_resource type="Script" path="res://scripts/fps_label.gd" id="9_fps"]
 [ext_resource type="PackedScene" path="res://scenes/world/world.tscn" id="10_world"]
+[ext_resource type="Script" path="res://scripts/screen_fade.gd" id="11_fade"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.5
@@ -67,3 +68,13 @@ offset_bottom = 38.0
 mouse_filter = 2
 text = "FPS: 0"
 script = ExtResource("9_fps")
+
+[node name="ScreenFade" type="ColorRect" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.07, 0.14, 0)
+script = ExtResource("11_fade")

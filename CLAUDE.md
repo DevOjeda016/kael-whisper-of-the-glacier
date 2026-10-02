@@ -25,6 +25,8 @@ Límites firmes del diseño: sin combate, sin vida/daño, sin fracaso duro. Un s
 - Trepar: cualquier superficie casi vertical (`|normal.y| < climb_max_normal_y`) salvo las del grupo `no_climb`. El jugador está en el grupo `player`.
 - Stamina: ~12 m de trepada máximo y solo regenera en suelo; los acantilados del mapa se parten en escalones de ≤10 m con repisas para descansar.
 - Caer bajo `fall_limit_y` reaparece en el último tótem tocado, sin castigo.
+- Nadar: agua en y=-1.5 (`scenes/world/world.tscn`, `Water/Volume` con `water_volume.gd`). Cansa, no regenera en el agua; sin resistencia = ahogarse (fundido y reaparecer en el último punto seguro). Se sale trepando la orilla o saltando. Esto reemplaza el "sin fracaso duro" del PDF por un fracaso suave.
+- Animación 'swim': si hay una animación con "swim" en el nombre se usa sola; si no, correr a 0.6x.
 - Animaciones se buscan por palabra clave, no por nombre exacto (Godot renombra al reimportar).
 
 ## Meshy
@@ -34,7 +36,7 @@ Al descargar animaciones el plugin crea `imported_models/` con copias duplicadas
 Binarios (`.glb`, `.png`, audio) van por Git LFS (`.gitattributes`). Se versionan `.import` y `.uid`; `.godot/` no.
 
 ## Mapa (grey-box, ~300x300 m, norte = -Z)
-Orilla de inicio al sur (y=0) -> cordillera con terrazas (y=15, 30) -> grieta de 12 m (barrera) -> orilla lejana al norte (y=12). Un puente en el extremo este cruza la grieta mientras no existan los bloques de hielo. 5 puntos de interés y 2 tótems.
+Orilla de inicio al sur (y=0) -> cordillera con terrazas (y=15, 30) -> grieta de 12 m (barrera) -> orilla lejana al norte (y=12). Un puente en el extremo este cruza la grieta mientras no existan los bloques de hielo. 6 puntos de interés y 2 tótems. El sector inicial tiene un estanque con isla para nadar.
 
 ## Reemplazar provisionales por arte de Meshy
 - Prop suelto (rock, ice_crystal, totem): abrir su `.tscn`, borrar el nodo `Visual`/malla y arrastrar ahí el `.glb`; todas las copias se actualizan.

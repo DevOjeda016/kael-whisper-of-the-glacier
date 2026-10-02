@@ -6,7 +6,7 @@ extends MeshInstance3D
 
 @export var inner_radius: float = 230.0
 @export var outer_radius: float = 2200.0
-@export var sea_level: float = -8.0
+@export var sea_level: float = -1.5
 @export var front_height: float = 30.0     # altura del frente de hielo junto al mar
 @export var peak_height: float = 380.0     # altura máxima hacia el fondo
 @export var angular_segments: int = 220

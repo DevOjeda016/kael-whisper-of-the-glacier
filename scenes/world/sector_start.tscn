@@ -12,13 +12,45 @@
 
 [node name="SectorStart" type="Node3D"]
 
-[node name="Ground" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 105)
+[node name="GroundWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, -4.5, 105)
 script = ExtResource("1_form")
-size = Vector3(300, 9, 90)
+size = Vector3(120, 9, 90)
 material = ExtResource("5_mat")
 wobble = 0.5
 top_bump = 0.3
+
+[node name="GroundEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, -4.5, 105)
+script = ExtResource("1_form")
+size = Vector3(120, 9, 90)
+material = ExtResource("5_mat")
+wobble = 0.5
+top_bump = 0.3
+
+[node name="GroundNorth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 76.5)
+script = ExtResource("1_form")
+size = Vector3(68, 9, 17)
+material = ExtResource("5_mat")
+wobble = 0.5
+top_bump = 0.3
+
+[node name="GroundSouth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.52, 132.5)
+script = ExtResource("1_form")
+size = Vector3(68, 9, 35)
+material = ExtResource("5_mat")
+wobble = 0.5
+top_bump = 0.3
+
+[node name="PondIsland" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.5, 100)
+script = ExtResource("1_form")
+size = Vector3(10, 9, 10)
+material = ExtResource("5_mat")
+wobble = 0.5
+top_bump = 0.15
 
 [node name="TutorialWall" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 3, 74)
@@ -68,8 +100,12 @@ wobble = 0
 top_bump = 0
 
 [node name="POI_Base" parent="." instance=ExtResource("9_scn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 68)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 79)
 poi_id = "base_muro"
+
+[node name="POI_Isla" parent="." instance=ExtResource("9_scn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100)
+poi_id = "isla_estanque"
 
 [node name="Totem_Start" parent="." instance=ExtResource("8_scn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 120)
@@ -91,4 +127,12 @@ scene = ExtResource("6_scn")
 count = 14
 area = Vector2(280, 80)
 scatter_seed = 4
+
+[node name="IslandCrystals" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100)
+script = ExtResource("2_scatter")
+scene = ExtResource("6_scn")
+count = 3
+area = Vector2(8, 8)
+scatter_seed = 9
 

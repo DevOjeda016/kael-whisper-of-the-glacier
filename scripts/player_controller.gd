@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-enum State { GROUND, CLIMBING }
+enum State { GROUND, CLIMBING, SWIMMING, DROWNING }
 
 # --- Movimiento en suelo ---
 @export var move_speed: float = 4.0
@@ -64,6 +64,22 @@ enum State { GROUND, CLIMBING }
 @export var climb_stamina_drain_rate: float = 1.0
 @export var stamina_regen_delay: float = 0.5 # segundos de gracia antes de regenerar
 
+# --- Nadar (estilo Zelda): Kael es torpe nadando, así que es lento y cansa;
+# no regenera resistencia en el agua y, si se agota, se ahoga y reaparece en
+# tierra firme. Con 5 s de resistencia alcanza ~17 m. ---
+@export var swim_speed: float = 2.5
+@export var swim_sprint_multiplier: float = 1.4
+@export var swim_acceleration: float = 6.0
+@export var swim_stamina_drain_rate: float = 0.7
+@export var swim_sprint_extra_drain: float = 0.7
+@export var swim_float_depth: float = 0.9      # cuánto bajan los pies de la superficie (agua a la altura del pecho)
+@export var swim_enter_depth: float = 0.35     # cuánto deben bajar los pies para empezar a nadar
+@export var water_jump_velocity: float = 7.0   # salto desde el agua para subirse a una orilla
+@export var water_jump_cost: float = 0.5
+@export var swim_anim_speed: float = 0.6       # velocidad de la animación provisional (correr)
+@export var drown_sink_time: float = 1.1       # segundos hundiéndose antes de reaparecer
+@export var safe_trail_interval: float = 0.75  # cada cuánto se guarda un punto seguro
+
 @onready var model: Node3D = $PenguinModel
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 @onready var climb_ray: RayCast3D = $ClimbRayCast3D
@@ -77,6 +93,13 @@ var run_anim: String = ""
 var climb_anim: String = ""
 var jump_anim: String = ""
 var lie_down_anim: String = ""
+var swim_anim: String = ""
+
+var current_water: Node = null
+var swim_cooldown: float = 0.0
+var safe_trail: Array[Vector3] = []
+var safe_timer: float = 0.0
+var ripple: MeshInstance3D = null
 
 var is_jump_anticipating: bool = false
 var jump_anticipation_timer: float = 0.0
@@ -92,6 +115,7 @@ var respawn_position: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	respawn_position = global_position
+	_create_ripple()
 
 	# El animator del modelo fusiona sus animaciones en su propio _ready();
 	# esperamos un frame para que ya estén disponibles.
@@ -106,7 +130,9 @@ func _ready() -> void:
 	climb_anim = model.get_best_animation("Climb")
 	jump_anim = model.get_best_animation("Hop")
 	lie_down_anim = model.get_best_animation("Lie")
-	print("Player: idle='%s'  run='%s'  climb='%s'  jump='%s'  lie_down='%s'" % [idle_anim, run_anim, climb_anim, jump_anim, lie_down_anim])
+	# Si aún no hay animación de nadar, se usa la de correr más lenta.
+	swim_anim = model.get_best_animation("Swim")
+	print("Player: idle='%s'  run='%s'  climb='%s'  jump='%s'  lie_down='%s'  swim='%s'" % [idle_anim, run_anim, climb_anim, jump_anim, lie_down_anim, swim_anim])
 
 	if idle_anim != "":
 		model.play_animation(idle_anim)
@@ -128,10 +154,17 @@ func _physics_process(delta: float) -> void:
 			_process_ground(delta)
 		State.CLIMBING:
 			_process_climbing(delta)
+		State.SWIMMING:
+			_process_swimming(delta)
+		State.DROWNING:
+			_process_drowning(delta)
 
 	move_and_slide()
 
-	if global_position.y < fall_limit_y:
+	if state == State.GROUND and is_on_floor():
+		_update_safe_trail(delta)
+
+	if global_position.y < fall_limit_y and state != State.DROWNING:
 		_respawn()
 
 ## Lo llaman los tótems de punto de control al tocarlos.
@@ -144,6 +177,177 @@ func _respawn() -> void:
 	state = State.GROUND
 	is_jump_anticipating = false
 	is_big_jump = false
+	_leave_swim()
+
+# --- Agua: la avisa el WaterVolume al entrar y salir ---
+func enter_water(water: Node) -> void:
+	current_water = water
+
+func exit_water(water: Node) -> void:
+	if current_water == water:
+		current_water = null
+
+func _is_in_water() -> bool:
+	return current_water != null and global_position.y < current_water.get_surface_y() - swim_enter_depth
+
+func _enter_swim() -> void:
+	state = State.SWIMMING
+	is_jump_anticipating = false
+	is_big_jump = false
+	velocity.y *= 0.3   # el agua amortigua la caída
+	_wake_up()
+	idle_timer = 0.0
+	if ripple:
+		ripple.visible = true
+
+## Restablece lo que nadar cambia: ondas ocultas y velocidad de animación normal.
+func _leave_swim() -> void:
+	if ripple:
+		ripple.visible = false
+	if model:
+		model.set_animation_paused(false)
+
+func _create_ripple() -> void:
+	ripple = MeshInstance3D.new()
+	var disc := CylinderMesh.new()
+	disc.top_radius = 0.9
+	disc.bottom_radius = 0.9
+	disc.height = 0.02
+	disc.radial_segments = 24
+	disc.rings = 1
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(1, 1, 1, 0.35)
+	disc.material = mat
+	ripple.mesh = disc
+	ripple.top_level = true
+	ripple.visible = false
+	ripple.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(ripple)
+
+func _process_swimming(delta: float) -> void:
+	if current_water == null:
+		_leave_swim()
+		state = State.GROUND
+		return
+
+	var surface: float = current_water.get_surface_y()
+	var input_dir := _get_input_dir()
+	var cam_basis: Basis = spring_arm.global_transform.basis
+	var forward := -cam_basis.z
+	var right := cam_basis.x
+	forward.y = 0.0
+	right.y = 0.0
+	forward = forward.normalized()
+	right = right.normalized()
+	var direction := right * input_dir.x + forward * input_dir.y
+	var is_moving := direction.length() > 0.1
+	var is_sprinting := is_moving and Input.is_action_pressed("sprint")
+
+	if is_moving:
+		direction = direction.normalized()
+		var speed := swim_speed * (swim_sprint_multiplier if is_sprinting else 1.0)
+		velocity.x = move_toward(velocity.x, direction.x * speed, swim_acceleration * delta)
+		velocity.z = move_toward(velocity.z, direction.z * speed, swim_acceleration * delta)
+		if model:
+			model.rotation.y = lerp_angle(model.rotation.y, atan2(direction.x, direction.z), rotation_speed * delta)
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, swim_acceleration * delta)
+		velocity.z = move_toward(velocity.z, 0.0, swim_acceleration * delta)
+
+	# Flotar: un resorte lleva los pies a la profundidad de nado.
+	var target_y := surface - swim_float_depth
+	velocity.y = clampf((target_y - global_position.y) * 6.0, -4.0, 4.0)
+
+	# Nadar cansa y no regenera; sin resistencia, se ahoga.
+	var drain := swim_stamina_drain_rate + (swim_sprint_extra_drain if is_sprinting else 0.0)
+	stamina = maxf(stamina - drain * delta, 0.0)
+	stamina_regen_timer = 0.0
+	idle_timer = 0.0
+	if stamina <= 0.0:
+		_start_drowning()
+		return
+
+	# Salto desde el agua para alcanzar una orilla.
+	if Input.is_action_just_pressed("jump") and stamina > water_jump_cost:
+		stamina -= water_jump_cost
+		velocity.y = water_jump_velocity
+		swim_cooldown = 0.5
+		_leave_swim()
+		state = State.GROUND
+		return
+
+	# Contra una pared de la orilla se sale trepando (reusa el trepado).
+	if is_moving:
+		climb_ray.target_position = direction * climb_detect_distance
+		climb_ray.force_raycast_update()
+		if _is_facing_climbable(direction):
+			_leave_swim()
+			_enter_climb()
+			return
+
+	# Animación provisional: la de correr, más lenta, hasta tener 'swim'.
+	if model:
+		var anim := swim_anim if swim_anim != "" else run_anim
+		if is_moving and anim != "":
+			if not model.is_playing_animation(anim):
+				model.play_animation(anim, true, 0.2, 1.0 if swim_anim != "" else swim_anim_speed)
+		elif idle_anim != "" and not model.is_playing_animation(idle_anim):
+			model.play_animation(idle_anim)
+
+	if ripple:
+		var pulse := 1.0 + 0.15 * sin(Time.get_ticks_msec() * 0.005)
+		ripple.global_position = Vector3(global_position.x, surface + 0.03, global_position.z)
+		ripple.scale = Vector3(pulse, 1.0, pulse)
+
+func _start_drowning() -> void:
+	state = State.DROWNING
+	_leave_swim()
+	var fade := get_tree().get_first_node_in_group("screen_fade")
+	if fade:
+		fade.fade_to(1.0, drown_sink_time * 0.8)
+	await get_tree().create_timer(drown_sink_time).timeout
+
+	# Reaparece en el punto seguro de hace ~1.5 s (o en el último tótem).
+	var target := respawn_position
+	if safe_trail.size() > 0:
+		target = safe_trail[maxi(0, safe_trail.size() - 3)]
+	global_position = target + Vector3.UP * 0.2
+	velocity = Vector3.ZERO
+	stamina = max_stamina
+	stamina_regen_timer = 0.0
+	swim_cooldown = 0.3
+	state = State.GROUND
+	if fade:
+		fade.fade_to(0.0, 0.7)
+
+func _process_drowning(delta: float) -> void:
+	velocity.x = move_toward(velocity.x, 0.0, swim_acceleration * delta)
+	velocity.z = move_toward(velocity.z, 0.0, swim_acceleration * delta)
+	velocity.y = -0.8
+
+func _update_safe_trail(delta: float) -> void:
+	safe_timer += delta
+	if safe_timer < safe_trail_interval:
+		return
+	safe_timer = 0.0
+	if _is_safe_spot():
+		safe_trail.append(global_position)
+		if safe_trail.size() > 8:
+			safe_trail.remove_at(0)
+
+## Punto seguro = hay suelo firme alrededor, o sea, no es el borde de una orilla.
+func _is_safe_spot() -> bool:
+	var space := get_world_3d().direct_space_state
+	for off in [Vector3(1.3, 0, 0), Vector3(-1.3, 0, 0), Vector3(0, 0, 1.3), Vector3(0, 0, -1.3)]:
+		var from: Vector3 = global_position + off + Vector3.UP
+		var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 3.5)
+		query.exclude = [get_rid()]
+		var hit := space.intersect_ray(query)
+		if hit.is_empty() or hit.normal.y < 0.7:
+			return false
+	return true
 
 func _get_input_dir() -> Vector2:
 	return Vector2(
@@ -159,6 +363,13 @@ func _process_ground(delta: float) -> void:
 	if is_lying_down and (input_dir.length() > 0.1 or jump_pressed):
 		_wake_up()
 		idle_timer = 0.0
+
+	# Al bajar de la superficie del agua, empieza a nadar.
+	if swim_cooldown > 0.0:
+		swim_cooldown -= delta
+	elif _is_in_water():
+		_enter_swim()
+		return
 
 	# --- Fase de anticipación del salto: brevísimo "agache" que solo frena
 	# la caída; el impulso horizontal se conserva tal cual (antes se
